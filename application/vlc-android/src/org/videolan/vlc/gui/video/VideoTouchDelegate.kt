@@ -320,10 +320,11 @@ class VideoTouchDelegate(private val player: VideoPlayerActivity,
     }
 
     private fun doVerticalTouchAction(y_changed: Float) {
-        val rightAction = touchX.toInt() > 4 * screenConfig.metrics.widthPixels / 7f
+        doSkipMedia(y_changed);
+        /*val rightAction = touchX.toInt() > 4 * screenConfig.metrics.widthPixels / 7f
         val leftAction = !rightAction && touchX.toInt() < 3 * screenConfig.metrics.widthPixels / 7f
-        if (!leftAction && !rightAction) return
-        val audio = touchControls and TOUCH_FLAG_AUDIO_VOLUME != 0
+        if (!leftAction && !rightAction) return*/
+        /*val audio = touchControls and TOUCH_FLAG_AUDIO_VOLUME != 0
         val brightness = touchControls and TOUCH_FLAG_BRIGHTNESS != 0
         if (!audio && !brightness)
             return
@@ -333,8 +334,36 @@ class VideoTouchDelegate(private val player: VideoPlayerActivity,
         } else {
             if (brightness) doBrightnessTouch(y_changed)
             else doVolumeTouch(y_changed)
-        }
+        }*/
         player.overlayDelegate.hideOverlay(true)
+    }
+
+    private fun doSkipMedia(y_changed: Float) {
+        // negative is swipe down, positive is swipe up
+        val delta = -(y_changed / screenConfig.yRange)
+        if (delta < 0) {
+            // previous
+            if (player.service!!.hasPrevious()) {
+                player.overlayDelegate.showInfo(R.string.previous, 50)
+                player.service!!.previous(false)
+            } else {
+                player.overlayDelegate.showInfo(R.string.stop, 50)
+                player.service!!.stop(false)
+            }
+        } else {
+            // next
+            if (player.service!!.hasNext()) {
+                player.overlayDelegate.showInfo(R.string.next, 50)
+                player.service!!.next(false)
+            }
+            else if (player.service!!.hasPrevious()) {
+                player.overlayDelegate.showInfo(R.string.firstsong, 50)
+                player.service!!.playIndex(0)
+            } else {
+                player.overlayDelegate.showInfo(R.string.stop, 50)
+                player.service!!.stop(false)
+            }
+        }
     }
 
     private fun doSeekTouch(coef: Int, gesturesize: Float, seek: Boolean) {

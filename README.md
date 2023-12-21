@@ -1,3 +1,7 @@
+## What are the changes on this fork
+
+This is intended for personal use only. Modified the swipe gestures to go to next and previous media when swiping up and down
+
 # VLC for Android
 
 This is the official **Android** port of [VLC](https://videolan.org/vlc/).
